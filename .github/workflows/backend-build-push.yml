@@ -27,8 +27,8 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
     
     - name: Build Docker image
-      run: docker build -t 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-backend/node-mongodb-deploy-backend:latest .
+      run: docker build -t 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-backend:latest .
       working-directory: ./backend
 
     - name: Push Docker image to ECR
-      run: docker push 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-backend/node-mongodb-deploy-backend:latest
+      run: docker push 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-backend:latest
