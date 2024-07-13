@@ -52,8 +52,8 @@ jobs:
       run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:latest .
+      run: docker build -t 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-frontend:latest .
       working-directory: ./frontend
 
     - name: Push Docker image to ECR
-      run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:latest
+      run: docker push 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-frontend:latest
