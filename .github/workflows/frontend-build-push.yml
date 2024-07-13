@@ -43,9 +43,13 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
     
+    - name: Get commit hash
+      id: get-commit-hash
+      run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
+
     - name: Build Docker image
-      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:latest .
+      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:${{ steps.get-commit-hash.outputs.commit-hash }} .
       working-directory: ./frontend
 
     - name: Push Docker image to ECR
-      run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:latest
+      run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:${{ steps.get-commit-hash.outputs.commit-hash }}

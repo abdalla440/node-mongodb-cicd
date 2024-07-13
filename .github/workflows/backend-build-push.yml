@@ -15,14 +15,6 @@ jobs:
       with:
         node-version: '16' 
 
-    # - name: Install dependencies
-    #   run: npm install
-    #   working-directory: ./backend
-
-    # - name: Build Backend Application
-    #   run: npm start 
-    #   working-directory: ./backend
-
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -34,9 +26,13 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
     
+    - name: Get commit hash
+      id: get-commit-hash
+      run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
+
     - name: Build Docker image
-      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-backend:latest .
+      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-backend:${{ steps.get-commit-hash.outputs.commit-hash }} .
       working-directory: ./backend
 
     - name: Push Docker image to ECR
-      run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-backend:latest
+      run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-backend:${{ steps.get-commit-hash.outputs.commit-hash }}
