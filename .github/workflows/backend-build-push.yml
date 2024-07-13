@@ -43,3 +43,4 @@ jobs:
 
     - name: Push Docker image to ECR
       run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-backend:latest
+      
