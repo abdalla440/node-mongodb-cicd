@@ -46,10 +46,14 @@ jobs:
     - name: Get commit hash
       id: get-commit-hash
       run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
+    
+    - name: Get timestamp
+      id: get-timestamp
+      run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:${{ steps.get-commit-hash.outputs.commit-hash }} .
+      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:latest .
       working-directory: ./frontend
 
     - name: Push Docker image to ECR
-      run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:${{ steps.get-commit-hash.outputs.commit-hash }}
+      run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:latest
