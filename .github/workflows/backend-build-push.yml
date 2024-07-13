@@ -1,0 +1,39 @@
+name: Backend Build and Push
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Log in to Amazon ECR
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ secrets.AWS_ECR_REGISTRY }}
+        username: AWS
+        password: ${{ secrets.AWS_ECR_ACCESS_TOKEN }}
+
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-backend:latest .
+
+    - name: Push Docker image to ECR
+      run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-backend:latest
