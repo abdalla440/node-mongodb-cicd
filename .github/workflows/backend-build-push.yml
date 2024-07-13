@@ -35,7 +35,8 @@ jobs:
       with:
         registry: ${{ secrets.AWS_ECR_REGISTRY }} 
         username: AWS
-        password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        ecr: auto
+        logout: true
 
     - name: Build Docker image
       run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-backend:latest
