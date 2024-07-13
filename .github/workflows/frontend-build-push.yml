@@ -39,9 +39,8 @@ jobs:
         password: ${{ secrets.AWS_ECR_ACCESS_TOKEN }}
 
     - name: Build Docker image
-      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:latest .
+      run: docker build -t ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:latest
       working-directory: ./frontend
 
     - name: Push Docker image to ECR
       run: docker push ${{ secrets.AWS_ECR_REGISTRY }}/node-mongodb-deploy-frontend:latest
-      
