@@ -1,11 +1,50 @@
-name: Backend Build and Push
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ master ] 
+    branches: [ master ]
 
 jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16' 
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./backend
+
+    - name: Run unit tests
+      run: npm test
+      working-directory: ./backend
+
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16' 
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./frontend
+
+    - name: Run unit tests
+      run: npm test --passWithNoTests
+      working-directory: ./frontend
+
   build-and-push-backend:
+    needs: test-backend
     runs-on: ubuntu-latest
 
     steps:
@@ -35,6 +74,7 @@ jobs:
       run: docker push 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-backend:latest
 
   build-and-push-frontend:
+    needs: test-frontend
     runs-on: ubuntu-latest
 
     steps:
@@ -62,27 +102,3 @@ jobs:
 
     - name: Push Docker image to ECR
       run: docker push 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-frontend:latest
-
-  test-backend:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Run unit tests
-      run: npm test
-      working-directory: ./backend
-
-  test-frontend:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Install dependencies
-      run: npm install
-      working-directory: ./frontend
-
-    - name: Run unit tests
-      run: npm test --passWithNoTests
-      working-directory: ./frontend
