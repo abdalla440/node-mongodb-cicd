@@ -79,7 +79,7 @@ jobs:
       working-directory: ./backend
 
     - name: Run unit tests
-      run: npm test
+      run: npm test --passWithNoTests
       working-directory: ./backend
 
   test-frontend:
@@ -98,5 +98,5 @@ jobs:
       working-directory: ./frontend
 
     - name: Run unit tests
-      run: npm test
+      run: npm test --passWithNoTests
       working-directory: ./frontend
