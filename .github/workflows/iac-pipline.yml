@@ -5,12 +5,12 @@ on:
     branches: 
       - master
     paths: 
-      - terraform/**
+        - terraform/**
   pull_request:
     branches: 
       - master
     paths: 
-      - terraform/**
+        - terraform/**
 
 jobs:
   terraform:
@@ -33,7 +33,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-  
+
       - name: Terraform Init
         id: init
         run: terraform init
@@ -44,14 +44,14 @@ jobs:
 
       - name: Run Terrascan
         run: |
-          docker run --rm -v $(pwd)/terraform:/iac accurics/terrascan terrascan scan -t aws -d /iac
+          docker run --rm -v $(pwd)/terraform:/workspace accurics/terrascan scan -t aws -d /workspace
 
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color -input=false -out planfile
-        continue-on-error: true 
+        continue-on-error: true
 
-      - name: Terraform Plan Status 
+      - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
