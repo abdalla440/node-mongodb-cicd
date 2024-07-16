@@ -44,7 +44,7 @@ jobs:
 
       - name: Run Terrascan
         run: |
-          docker run --rm -v $(pwd)/terraform:/workspace accurics/terrascan scan -t aws -d /workspace
+          docker run --rm -v $(pwd):/workspace -w /workspace accurics/terrascan terrascan scan -t aws -d /workspace/terraform
 
       - name: Terraform Plan
         id: plan
