@@ -42,15 +42,6 @@ jobs:
         id: validate
         run: terraform validate
 
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -no-color -input=false -out planfile
-        continue-on-error: true 
-
-      - name: Terraform Plan Status 
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
-
       - name: Install Terrascan
         run: |
           curl -LJO https://github.com/accurics/terrascan/releases/latest/download/terrascan-linux-amd64
@@ -59,6 +50,15 @@ jobs:
 
       - name: Terrascan
         run: terrascan scan -t aws -f .
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color -input=false -out planfile
+        continue-on-error: true 
+
+      - name: Terraform Plan Status 
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
 
       - name: Terraform Apply
         id: apply
