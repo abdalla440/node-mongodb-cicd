@@ -14,10 +14,10 @@ resource "aws_instance" "ec2" {
     Name = var.instance_name
   }
 
-  metadata_options {
-    http_tokens = "required"  # Enforce IMDSv2
-  }
+  # metadata_options {
+  #   http_tokens = "required"  # Enforce IMDSv2
+  # }
   
-  monitoring = true  # Enable detailed monitoring
+  # monitoring = true  # Enable detailed monitoring
 
 }
