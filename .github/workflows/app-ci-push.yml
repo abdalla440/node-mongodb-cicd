@@ -97,6 +97,7 @@ jobs:
           -Dsonar.sources=src/
           -Dsonar.verbose=true
               
+
   frontend-security:
     needs: test-frontend
     runs-on: ubuntu-latest
@@ -104,26 +105,27 @@ jobs:
       run:
         working-directory: ./frontend
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@master
       
-      - name: Install Snyk CLI
-        uses: snyk/actions/setup@v2
-        with:
-          version: 'v1.900.0' # Specify the latest stable version
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
       - name: Run Snyk to check for vulnerabilities
-        run: snyk test --json > snyk-report.json
-        continue-on-error: true
+        uses: snyk/actions/node@master
+        continue-on-error: true # To make sure that SARIF upload gets called
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          
+      - name: Install Snyk CLI
+        uses: snyk/actions/setup@master
+        with:
+          version: latest
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  
+          
+      - name: Snyk Authenticate    
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Snyk Code Test
-        run: snyk code test --all-projects --json > snyk-code-report.json
+        run: snyk code test --all-projects
         continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   backend-security:
     needs: test-backend
@@ -132,26 +134,13 @@ jobs:
       run:
         working-directory: ./backend
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Install Snyk CLI
-        uses: snyk/actions/setup@v2
-        with:
-          version: 'v1.900.0' # Specify the latest stable version
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
+      - uses: actions/checkout@master
       - name: Run Snyk to check for vulnerabilities
-        run: snyk test --json > snyk-report.json
+        uses: snyk/actions/maven@master
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: Snyk Code Test
-        run: snyk code test --all-projects --json > snyk-code-report.json
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  
+    
   build-and-push-backend:
     needs: backend-security
     runs-on: ubuntu-latest
