@@ -34,9 +34,8 @@ jobs:
       run: npm test
       working-directory: ./backend
       env:
-        CI: true 
+        CI: true
 
-            # Setup sonar-scanner
     - name: Setup SonarQube
       uses: warchant/setup-sonar-scanner@v8
 
@@ -54,7 +53,13 @@ jobs:
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.sources=.
           -Dsonar.verbose=true
-        
+
+    - name: Check for SonarQube issues and create GitHub issue
+      if: failure()
+      run: |
+        gh issue create --title "SonarQube Issues Found" --body "SonarQube analysis found issues. Please check the SonarQube dashboard for details."
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test-frontend:
     runs-on: ubuntu-latest
@@ -65,7 +70,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16' 
+        node-version: '16'
 
     - name: Install dependencies
       run: npm install
@@ -75,17 +80,15 @@ jobs:
       run: npm test --passWithNoTests
       working-directory: ./frontend
       env:
-        CI: true 
+        CI: true
 
-
-    # Setup sonar-scanner
     - name: Setup SonarQube
       uses: warchant/setup-sonar-scanner@v8
 
     - name: Analyze with SonarCloud
       uses: sonarsource/sonarcloud-github-action@master
       env:
-        GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
         projectBaseDir: frontend
@@ -96,7 +99,13 @@ jobs:
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.sources=src/
           -Dsonar.verbose=true
-              
+
+    - name: Check for SonarQube issues and create GitHub issue
+      if: failure()
+      run: |
+        gh issue create --title "SonarQube Issues Found" --body "SonarQube analysis found issues. Please check the SonarQube dashboard for details."
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   frontend-security:
     needs: test-frontend
@@ -105,27 +114,33 @@ jobs:
       run:
         working-directory: ./frontend
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
       
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        continue-on-error: true # To make sure that SARIF upload gets called
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-          
       - name: Install Snyk CLI
-        uses: snyk/actions/setup@master
+        uses: snyk/actions/setup@v2
         with:
           version: latest
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           
-      - name: Snyk Authenticate    
-        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - name: Run Snyk to check for vulnerabilities
+        run: snyk test --json > snyk-report.json
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Snyk Code Test
-        run: snyk code test --all-projects
+        run: snyk code test --all-projects --json > snyk-code-report.json
         continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Check for Snyk issues and create GitHub issue
+        if: failure()
+        run: |
+          gh issue create --title "Snyk Vulnerabilities Found" --body "Snyk analysis found vulnerabilities. Please check the Snyk dashboard for details."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   backend-security:
     needs: test-backend
@@ -134,26 +149,33 @@ jobs:
       run:
         working-directory: ./backend
     steps:
-      - uses: actions/checkout@master
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        continue-on-error: true # To make sure that SARIF upload gets called
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-          
+      - uses: actions/checkout@v3
+
       - name: Install Snyk CLI
-        uses: snyk/actions/setup@master
+        uses: snyk/actions/setup@v2
         with:
           version: latest
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           
-      - name: Snyk Authenticate    
-        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+      - name: Run Snyk to check for vulnerabilities
+        run: snyk test --json > snyk-report.json
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Snyk Code Test
-        run: snyk code test --all-projects
+        run: snyk code test --all-projects --json > snyk-code-report.json
         continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Check for Snyk issues and create GitHub issue
+        if: failure()
+        run: |
+          gh issue create --title "Snyk Vulnerabilities Found" --body "Snyk analysis found vulnerabilities. Please check the Snyk dashboard for details."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
   build-and-push-backend:
     needs: backend-security
@@ -214,4 +236,3 @@ jobs:
 
     - name: Push Docker image to ECR
       run: docker push 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-frontend:latest
-      
