@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: ogochukwuozotta/backend-api:latest
+        image: 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-backend:latest
         ports:
         - containerPort: 3000
         env:
