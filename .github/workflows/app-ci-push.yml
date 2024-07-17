@@ -97,10 +97,65 @@ jobs:
           -Dsonar.sources=src/
           -Dsonar.verbose=true
               
-          
 
-  build-and-push-backend:
+  frontend-security:
+    needs: test-frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          
+      - name: Install Snyk CLI
+        uses: snyk/actions/setup@master
+        with:
+          version: latest
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  
+          
+      - name: Snyk Authenticate    
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Snyk Code Test
+        run: snyk code test --all-projects
+        continue-on-error: true
+
+  backend-security:
     needs: test-backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true # To make sure that SARIF upload gets called
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          
+      - name: Install Snyk CLI
+        uses: snyk/actions/setup@master
+        with:
+          version: latest
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          
+      - name: Snyk Authenticate    
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Snyk Code Test
+        run: snyk code test --all-projects
+        continue-on-error: true
+    
+  build-and-push-backend:
+    needs: backend-security
     runs-on: ubuntu-latest
 
     steps:
@@ -130,7 +185,7 @@ jobs:
       run: docker push 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-backend:latest
 
   build-and-push-frontend:
-    needs: test-frontend
+    needs: frontend-security
     runs-on: ubuntu-latest
 
     steps:
