@@ -5,12 +5,12 @@ on:
     branches: 
       - master
     paths: 
-        - terraform/**
+      - terraform/**
   pull_request:
     branches: 
       - master
     paths: 
-        - terraform/**
+      - terraform/**
 
 jobs:
   terraform:
@@ -44,8 +44,7 @@ jobs:
 
       - name: Run Terrascan
         run: |
-          docker run --rm -v $(pwd)/terraform: accurics/terrascan scan -t aws 
-        #   docker run --rm -v $(pwd):/workspace -w /workspace accurics/terrascan scan -t aws -d /workspace/terraform
+          docker run --rm -v $(pwd):/workspace -w /workspace accurics/terrascan scan -t aws -d /workspace/terraform
 
       - name: Terraform Plan
         id: plan
