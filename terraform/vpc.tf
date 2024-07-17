@@ -71,3 +71,29 @@ resource "aws_security_group" "security-group" {
     Name = var.sg-name
   }
 }
+
+resource "aws_flow_log" "vpc-flow-log" {
+  depends_on = [aws_vpc.vpc]
+
+  iam_role_arn    = aws_iam_role.flow-log-role.arn
+  log_destination = aws_cloudwatch_log_group.flow-logs.arn
+  traffic_type    = "ALL"
+  vpc_id          = aws_vpc.vpc.id
+}
+
+resource "aws_iam_role" "flow-log-role" {
+  name = "flow-log-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "vpc-flow-logs.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_cloudwatch_log_group" "flow-logs" {
+  name = "/aws/vpc/flow-logs-${aws_vpc.vpc.id}"
+}

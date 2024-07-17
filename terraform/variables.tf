@@ -59,11 +59,6 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
-variable "key_name" {
-  description = "EC2 keypair"
-  type        = string
-  default     = "gitopskey"
-}
 
 variable "instance_name" {
   description = "EC2 Instance name for the jumphost server"
@@ -83,7 +78,7 @@ variable "subnet_cidr" {
   default     = "10.0.1.0/24"
 }
 
-variable "ssh_key_name" {
+variable "key_name" {
   description = "The name of the SSH key pair to use for the instance."
   type        = string
   default     = "pwc-instances-key"
