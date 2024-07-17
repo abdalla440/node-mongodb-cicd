@@ -54,13 +54,7 @@ jobs:
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.sources=.
           -Dsonar.verbose=true
-
-    - name: Check for SonarQube issues and create GitHub issue
-      if: failure()
-      run: |
-        gh issue create --title "SonarQube Issues Found" --body "SonarQube analysis found issues. Please check the SonarQube dashboard for details."
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}           
+        
 
   test-frontend:
     runs-on: ubuntu-latest
@@ -102,13 +96,7 @@ jobs:
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.sources=src/
           -Dsonar.verbose=true
-
-    - name: Check for SonarQube issues and create GitHub issue
-      if: failure()
-      run: |
-        gh issue create --title "SonarQube Issues Found" --body "SonarQube analysis found issues. Please check the SonarQube dashboard for details."
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}             
+              
 
   frontend-security:
     needs: test-frontend
@@ -139,15 +127,6 @@ jobs:
         run: snyk code test --all-projects
         continue-on-error: true
 
-
-      - name: Check for Snyk issues and create GitHub issue
-        if: failure()
-        run: |
-          gh issue create --title "Snyk Vulnerabilities Found" --body "Snyk analysis found vulnerabilities. Please check the Snyk dashboard for details."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
   backend-security:
     needs: test-backend
     runs-on: ubuntu-latest
@@ -177,12 +156,6 @@ jobs:
         continue-on-error: true
 
 
-      - name: Check for Snyk issues and create GitHub issue
-        if: failure()
-        run: |
-          gh issue create --title "Snyk Vulnerabilities Found" --body "Snyk analysis found vulnerabilities. Please check the Snyk dashboard for details."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
   build-and-push-backend:
     needs: backend-security
