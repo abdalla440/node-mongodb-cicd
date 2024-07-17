@@ -96,4 +96,6 @@ resource "aws_iam_role" "flow-log-role" {
 
 resource "aws_cloudwatch_log_group" "flow-logs" {
   name = "/aws/vpc/flow-logs-${aws_vpc.vpc.id}"
+  
+  retention_in_days = 30
 }
