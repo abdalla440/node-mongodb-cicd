@@ -7,8 +7,6 @@ terraform {
     }
     
   }
-
-
   backend "remote" {
     hostname = "app.terraform.io"    
     organization = "A-Hannora-Systems"
@@ -16,6 +14,4 @@ terraform {
       name = "ramzy-task"
     }
   }
-
-  
 }
