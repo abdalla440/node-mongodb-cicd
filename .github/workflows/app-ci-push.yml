@@ -8,13 +8,7 @@ on:
       - backend/**
       - frontend/**
       - kubernetes-manifest/**
-  pull_request:
-    branches: 
-      - master
-    paths: 
-      - backend/**
-      - frontend/**
-      - kubernetes-manifest/**
+  
 
 jobs:
   test-backend:
