@@ -224,9 +224,9 @@ jobs:
 
 
   create-backend-test-issue:
-    # needs: test-backend
+    needs: test-backend
     runs-on: ubuntu-latest
-    # if: ${{ failure() }}
+    if: ${{ failure() }}
     
     steps:
       - uses: actions/checkout@v3
@@ -236,33 +236,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
         with:
           assignees: abdalla440
-  # create-frontend-test-issue:
-  #   needs: test-frontend
-  #   runs-on: ubuntu-latest
-  #   if: ${{ failure() }}
-  #   steps:
-  #     - uses: JasonEtco/create-an-issue@v2
-  #       env:
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          
-  # create-security-issue:
-  #   needs: [backend-security, frontend-security, k8s-manifest-scan] 
-  #   runs-on: ubuntu-latest
-  #   if: ${{ failure() }} 
-  #   steps:
-  #     - uses: JasonEtco/create-an-issue@v2
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         assignees: JasonEtco, octocat
-  #         milestone: 1
-  #         update_existing: true
-  #         search_existing: all
-          
+  create-frontend-test-issue:
+      needs: test-frontend
+      runs-on: ubuntu-latest
+      if: ${{ failure() }}
+      
+      steps:
+        - uses: actions/checkout@v3
 
-
-
+        - uses: JasonEtco/create-an-issue@v2
+          env:
+            GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
+          with:
+            assignees: abdalla440
 
       
   k8s-manifest-scan:
