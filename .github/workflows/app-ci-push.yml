@@ -227,7 +227,10 @@ jobs:
     needs: test-backend
     runs-on: ubuntu-latest
     # if: ${{ failure() }}
+    
     steps:
+      - uses: actions/checkout@v3
+
       - uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
