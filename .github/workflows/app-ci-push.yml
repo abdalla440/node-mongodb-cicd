@@ -20,7 +20,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16' 
+        node-version: '21' 
 
     - name: Install dependencies
       run: npm install
@@ -61,7 +61,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16' 
+        node-version: '21' 
 
     - name: Install dependencies
       run: npm install
@@ -163,7 +163,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16' 
+        node-version: '21' 
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -193,7 +193,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: '21'
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
