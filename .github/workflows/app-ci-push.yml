@@ -219,50 +219,44 @@ jobs:
     - name: Push Docker image to ECR
       run: docker push 058264547261.dkr.ecr.us-east-1.amazonaws.com/node-mongodb-deploy-frontend:latest
 
-
-
+# 
 
 
 
   create-backend-test-issue:
     needs: test-backend
     runs-on: ubuntu-latest
-    if: ${{ failure() }}
+    # if: ${{ failure() }}
     steps:
-      - name: Create Issue for Backend Tests
-        uses: JasonEtco/create-an-issue@v2
-        with:
-          token: ${{ secrets._GITHUB_TOKEN }} 
-          title: "Backend Tests Failed"
-          body: "See the latest workflow run for details: ${{ github.workflow.run.html_url }}" # Link to workflow run
-          labels: backend, tests, bug
-
-  create-frontend-test-issue:
-    needs: test-frontend
-    runs-on: ubuntu-latest
-    if: ${{ failure() }}
-    steps:
-      - name: Create Issue for Frontend Tests
-        uses: JasonEtco/create-an-issue@v2
-        with:
-          token: ${{ secrets._GITHUB_TOKEN }} 
-          title: "Frontend Tests Failed"
-          body: "See the latest workflow run for details: ${{ github.workflow.run.html_url }}" # Link to workflow run
-          labels: frontend, tests, bug 
-
-  create-security-issue:
-    needs: [backend-security, frontend-security, k8s-manifest-scan] 
-    runs-on: ubuntu-latest
-    if: ${{ failure() }} 
-    steps:
-      - name: Create Issue for Security Issues
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          token: ${{ secrets._GITHUB_TOKEN }}
-          title: "[Security] New vulnerabilities detected!" 
-          path: ./frontend/snyk.sarif # Adjust the path if needed
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
+  # create-frontend-test-issue:
+  #   needs: test-frontend
+  #   runs-on: ubuntu-latest
+  #   if: ${{ failure() }}
+  #   steps:
+  #     - uses: JasonEtco/create-an-issue@v2
+  #       env:
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          
+  # create-security-issue:
+  #   needs: [backend-security, frontend-security, k8s-manifest-scan] 
+  #   runs-on: ubuntu-latest
+  #   if: ${{ failure() }} 
+  #   steps:
+  #     - uses: JasonEtco/create-an-issue@v2
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         assignees: JasonEtco, octocat
+  #         milestone: 1
+  #         update_existing: true
+  #         search_existing: all
+          
 
 
 
