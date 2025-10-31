@@ -1,4 +1,4 @@
-FROM node:22.4.1-bookworm-slim
+FROM node:22.21.1-bookworm-slim
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY . .
